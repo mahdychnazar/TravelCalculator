@@ -1,18 +1,17 @@
-
 <div class = "row">
     <div class = "col-md-1">
-        <img src="assets/images/flight.png" class="picture">
+        <img src="assets/images/hotel.png" class="picture">
     </div>
     <div class = "col-md-3">
-        <div><%= flight.date%></div>
-        <div><%= flight.carrier%></div>
+        <div><%= hotel.name%></div>
+        <div><%= hotel.address.streetAddress%></div>
     </div>
     <div class = "col-md-3">
-        <div><%= flight.origin%></div>
-        <div><%= flight.destination%></div>
+        <div><%= hotel.starRating%></div>
+        <div>зірок</div>
     </div>
     <div class = "col-md-3">
-        <div><%= flight.minPrice%></div>
+        <div><%= hotel.ratePlan.price.current%></div>
         <div>грн</div>
     </div>
     <div class = "col-md-2">

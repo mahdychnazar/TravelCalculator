@@ -27,7 +27,7 @@
     </div>
 </header>
 
-<div class = container>
+<div class = "container overflow auto">
     <form>
         <div class="row">
             <div class="col">
@@ -44,30 +44,46 @@
                 <label for="departure">Відправна точка</label>
                 <input type="text" class="form-control is-invalid" placeholder="Введіть назву міста виїзду" id = "departure" required>
                 <div class="valid-feedback" id = "departure-error">
-                    Please provide a valid city.
+                    Місто не знайдено!!!.
                 </div>
             </div>
             <div class="col">
                 <label for="arrival">Пункт призначення</label>
                 <input type="text" class="form-control is-invalid" id="arrival" placeholder="State" required>
+                <div class="valid-feedback" id = "arrival-error">
+                    Місто не знайдено!!!.
+                </div>
         </div>
         <div>
             <button class="btn btn-primary" type="button" id = "calcButton">Calculate!</button>
         </div>
     </form>
-</div>
+
 <div id = "map">
 
 </div>
-
+<div>
+    <span>
+        Рейси:
+    </span>
+</div>
 <div id = "flightsList">
 
 </div>
 
-
-<div class="info">
-    <div class="infoText">Travel Calculator - практичний проект в межах курсу JavaScript в Києво-Могилянській Академії</div>
+<div>
+    <span>
+        Готелі:
+    </span>
 </div>
+<div id = "hotelsList">
+    <div class="valid-feedback" id = "hotels-error">
+        Рейсв немає!!!
+    </div>
+</div>
+
+</div>
+
 
 
 <!-- jQuery JavaScript -->

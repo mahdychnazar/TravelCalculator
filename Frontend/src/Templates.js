@@ -5,3 +5,5 @@ var fs = require('fs');
 var ejs = require('ejs');
 
 exports.FlightTamplate = ejs.compile(fs.readFileSync('./Frontend/templates/FlightTemplate.ejs', "utf8"));
+
+exports.HotelTamplate = ejs.compile(fs.readFileSync('./Frontend/templates/HotelTemplate.ejs', "utf8"));

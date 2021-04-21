@@ -1,12 +1,20 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 function initialize(){
-
-
+    var todaysDate = new Date();
+    var year = todaysDate.getFullYear();
+    var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);
+    var day = ("0" + todaysDate.getDate()).slice(-2);
+    var minDate = (year +"-"+ month +"-"+ day);
+    $('#firstDate').attr('min',minDate);
+    $('#secondDate').attr('min',minDate);
+    //console.log(startDate);
+    startDate = minDate;
+    finishDate = minDate;
     $('#firstDate').on("input", function(){
         startDate = document.getElementById("firstDate").value;
         console.log(startDate);
-        if(startDate > finishDate){
+        if(startDate > finishDate || startDate < minDate){
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
@@ -25,7 +33,7 @@ function initialize(){
     $('#secondDate').on("input", function(){
         finishDate = document.getElementById("secondDate").value;
         console.log(finishDate);
-        if(startDate > finishDate){
+        if(startDate > finishDate || startDate < minDate){
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
@@ -41,7 +49,7 @@ function initialize(){
     })
     $('#arrival').on("input", function(){
         var city = $('#arrival').val();
-        console.log(city);
+        //console.log(city);
         if(!checkName(city)){
             $("#arrival").removeClass("is-valid");
             $("#arrival").addClass("is-invalid");
@@ -55,7 +63,7 @@ function initialize(){
 
     $('#departure').on("input", function(){
         var city = $('#departure').val();
-        console.log(city);
+       // console.log(city);
         if(!checkName(city)){
             $("#departure").removeClass("is-valid");
             $("#departure").addClass("is-invalid");
@@ -84,6 +92,8 @@ function checkName(name) {
     return true;
 }
 
+
+//exports.checkDate = checkDate;
 exports.initialize = initialize;
 },{}],2:[function(require,module,exports){
 /**
@@ -92,8 +102,10 @@ exports.initialize = initialize;
 
 var ejs = require('ejs');
 
-exports.FlightTamplate = ejs.compile("\r\n<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/flight.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-4\">\r\n        <div><%= flight.date%></div>\r\n        <div><%= flight.carrier%></div>\r\n    </div>\r\n    <div class = \"col-md-4\">\r\n        <div><%= flight.origin%></div>\r\n        <div><%= flight.destination%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= flight.minPrice%></div>\r\n        <div>грн</div>\r\n    </div>\r\n\r\n</div>");
-},{"ejs":6}],3:[function(require,module,exports){
+exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.origin%></div>\n        <div><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2\">\n        <button>обрати</button>\n    </div>\n\n</div>");
+
+exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.ratePlan.price.current%></div>\r\n        <div>грн</div>\r\n    </div>\r\n    <div class = \"col-md-2\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
+},{"ejs":7}],3:[function(require,module,exports){
 var addressFrom;
 var addressTo;
 
@@ -103,9 +115,9 @@ var cityToID = null;
 var countryFromID = null;
 var countryToID = null;
 
+
 var places;
 var flights;
-
 
 var startDate = new Date();
 var finishDate = new Date();
@@ -115,11 +127,11 @@ var $flightsList = $("#flightsList");
 
 
 
-function getPlaceID(city){
+function getPlaceID(addressFrom, addressTo, startDate) {
     const settings = {
         "async": false,
         "crossDomain": true,
-        "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/UA/UAH/uk-UA/?query=" + city,
+        "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/UA/UAH/uk-UA/?query=" + addressFrom,
         "method": "GET",
         "headers": {
             "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
@@ -127,11 +139,32 @@ function getPlaceID(city){
         }
     };
 
-    return $.ajax(settings).done(function (response) {
-        return response;
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        cityFromID = response.Places[0].PlaceId;
+        console.log(cityFromID);
+        const settings = {
+            "async": false,
+            "crossDomain": true,
+            "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/UA/UAH/uk-UA/?query=" + addressTo,
+            "method": "GET",
+            "headers": {
+                "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+                "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+            }
+        };
 
-    });
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            cityToID = response.Places[0].PlaceId;
+            console.log(cityFromID);
+            getFlights(cityFromID, cityToID, startDate);
+
+
+        });
+    })
 }
+
 
 function getFlights(placeFrom, placeTo, departureDate){
     const settings = {
@@ -145,8 +178,9 @@ function getFlights(placeFrom, placeTo, departureDate){
         }
     };
 
-    return $.ajax(settings).done(function (response) {
-        return response;
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        showFlights(flightInfo(response));
     });
 }
 function flightInfo(flights){
@@ -201,67 +235,159 @@ function showFlights(flightInfo){
     }
 
 }
+function showNotFount(){
+    $flightsList.html("");
+}
+
+
 
 function initialize() {
-
-
-
-
     $("#calcButton").click(function () {
+        $flightsList.html("Шукаю авіарейси...");
+        cityToID = null;
+        cityFromID = null;
+
         addressTo = $("#arrival").val();
         addressFrom = $("#departure").val();
         startDate = $("#firstDate").val();
+        finishDate = $("#secondDate").val();
 
-        places = getPlaceID(addressFrom).responseJSON;
-        //console.log(places);
+        getPlaceID(addressFrom, addressTo, startDate);
+        /*console.log(places);
+        if(places.Places.length != 0){
+            cityFromID = places.Places[0].CityId;
+            countryFromID = places.Places[0].CountryId;
+            $("#departure-error").removeClass("invalid-feedback");
+            $("#departure-error").addClass("valid-feedback");
+        }
+        else{
+            $("#departure-error").removeClass("valid-feedback");
+            $("#departure-error").addClass("invalid-feedback");
+            $("#departure").removeClass("is-valid");
+            $("#departure").addClass("is-invalid");
+        }
 
-        cityFromID = places.Places[0].CityId;
-        countryFromID = places.Places[0].CountryId;
         places = getPlaceID(addressTo).responseJSON;
-        //console.log(places);
-
-        cityToID = places.Places[0].CityId;
-        countryToID = places.Places[0].CountryId;
-        flights = getFlights(cityFromID, cityToID, startDate).responseJSON;
-
-
-       /* console.log(cityFromID);
-        console.log(countryFromID);
+        console.log(places);
+        if(places.Places.length !== 0) {
+            cityToID = places.Places[0].CityId;
+            countryToID = places.Places[0].CountryId;
+            $("#arrival-error").removeClass("invalid-feedback");
+            $("#arrival-error").addClass("valid-feedback");
+        }
+        else{
+            $("#arrival-error").removeClass("valid-feedback");
+            $("#arrival-error").addClass("invalid-feedback");
+            $("#arrival").removeClass("is-valid");
+            $("#arrival").addClass("is-invalid");
+        }
         console.log(cityToID);
-        console.log(countryToID);
-        console.log(flights);*/
+        console.log(cityFromID);
 
-       // console.log(flightInfo(flights));
-        showFlights(flightInfo(flights));
+        if(cityToID !== null && cityFromID !== null  && !isNaN(new Date(startDate).getTime()) ){
+            flights = getFlights(cityFromID, cityToID, startDate).responseJSON;
+            showFlights(flightInfo(flights));
+        }
+        else{
+            showNotFount();
+        }*/
+
     });
 }
 exports.initialize = initialize;
 },{"../Templates":2}],4:[function(require,module,exports){
+var destinationInfo = null;
+var hotelsInfo = [];
+
+var Templates = require('../Templates');
+var $hotelsList = $("#hotelsList");
+/*var checkInDate = new Date();
+var checkOutDate = new Date();*/
+
+
+function getHotels(checkInDate, checkOutDate, destinationID){
+    const settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://hotels4.p.rapidapi.com/properties/list?destinationId="+destinationID+"&pageNumber=1&checkIn=" + checkInDate + "&checkOut="+checkOutDate+"&pageSize=25&adults1=1&currency=UAH&locale=uk-UA&sortOrder=PRICE",
+        "method": "GET",
+        "headers": {
+            "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+            "x-rapidapi-host": "hotels4.p.rapidapi.com"
+        }
+    };
+
+    $.ajax(settings).done(function (response) {
+         console.log(response);
+         showHotels(response.data.body.searchResults.results);
+    });
+}
+function getDestinationID(place, startDate, finishDate){
+    const settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://hotels-com-provider.p.rapidapi.com/v1/destinations/search?locale=uk_UA&currency=UAH&query="+place,
+        "method": "GET",
+        "headers": {
+            "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+            "x-rapidapi-host": "hotels-com-provider.p.rapidapi.com"
+        }
+    };
+
+    $.ajax(settings).done(function (response) {
+         console.log(response);
+        destinationInfo = response.suggestions[0].entities[0];
+        getHotels(startDate, finishDate, destinationInfo.destinationId);
+
+    });
+}
+
+function showHotels(hotelsInfo){
+    $hotelsList.html("");
+    for(let i = 0; i < hotelsInfo.length; i++) {
+        var html_code = Templates.HotelTamplate({hotel: hotelsInfo[i]});
+        var $node = $(html_code);
+        $hotelsList.append($node);
+    }
+
+}
+
+function initialize(){
+    $("#calcButton").click(function () {
+        $hotelsList.html("Шукаю готелі...");
+        destinationInfo = null;
+        addressTo = $("#arrival").val();
+        startDate = $("#firstDate").val();
+        finishDate = $("#secondDate").val();
+        getDestinationID(addressTo, startDate, finishDate);
+    });
+}
+
+exports.initialize = initialize;
+},{"../Templates":2}],5:[function(require,module,exports){
 var Flights = require("./flights/Flights");
+var Hotels = require("./flights/Hotels");
 var Forms = require("./Forms");
+
 
 
 $(function() {
     Flights.initialize();
     Forms.initialize();
-    $(document).ready(function () {
-        var todaysDate = new Date();
-        var year = todaysDate.getFullYear();
-        var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);
-        var day = ("0" + todaysDate.getDate()).slice(-2);
-        var minDate = (year +"-"+ month +"-"+ day);
-        $('#firstDate').attr('min',minDate);
-        startDate = minDate;
-        $('#secondDate').attr('min',minDate);
-        finishDate = minDate;
-    });
-});``
+    Hotels.initialize();
 
 
 
-},{"./Forms":1,"./flights/Flights":3}],5:[function(require,module,exports){
 
-},{}],6:[function(require,module,exports){
+
+
+});
+
+
+
+},{"./Forms":1,"./flights/Flights":3,"./flights/Hotels":4}],6:[function(require,module,exports){
+
+},{}],7:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -1243,7 +1369,7 @@ if (typeof window != 'undefined') {
   window.ejs = exports;
 }
 
-},{"../package.json":8,"./utils":7,"fs":5,"path":9}],7:[function(require,module,exports){
+},{"../package.json":9,"./utils":8,"fs":6,"path":10}],8:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -1412,30 +1538,35 @@ exports.cache = {
   }
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports={
-  "_from": "ejs@^2.4.1",
+  "_args": [
+    [
+      "ejs@2.7.4",
+      "D:\\project\\TravelCalculator"
+    ]
+  ],
+  "_from": "ejs@2.7.4",
   "_id": "ejs@2.7.4",
   "_inBundle": false,
   "_integrity": "sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==",
   "_location": "/ejs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "ejs@^2.4.1",
+    "raw": "ejs@2.7.4",
     "name": "ejs",
     "escapedName": "ejs",
-    "rawSpec": "^2.4.1",
+    "rawSpec": "2.7.4",
     "saveSpec": null,
-    "fetchSpec": "^2.4.1"
+    "fetchSpec": "2.7.4"
   },
   "_requiredBy": [
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz",
-  "_shasum": "48661287573dcc53e366c7a1ae52c3a120eec9ba",
-  "_spec": "ejs@^2.4.1",
+  "_spec": "2.7.4",
   "_where": "D:\\project\\TravelCalculator",
   "author": {
     "name": "Matthew Eernisse",
@@ -1445,9 +1576,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/mde/ejs/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {},
-  "deprecated": false,
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.1.1",
@@ -1482,7 +1611,7 @@ module.exports={
   "version": "2.7.4"
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (process){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
 // backported and transplited with Babel, with backwards-compat fixes
@@ -1788,7 +1917,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":10}],10:[function(require,module,exports){
+},{"_process":11}],11:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1974,4 +2103,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[4]);
+},{}]},{},[5]);

@@ -6,10 +6,7 @@ body{
   .navBar{
     height: @panelTopHeight;
     padding:10px;
-    .picture{
-      height: 60px;
-      width: 60px;
-    }
+
   }
 
   .container {
@@ -17,12 +14,14 @@ body{
 
     .row {
       margin-top: 20px;
-      .invalid-feedback{
-        visibility: visible;
-      }
-      .valid-feedback{
-        visibility: hidden;
-      }
+
+    }
+    .invalid-feedback{
+      display: block!important;
+      //visibility: visible;
+    }
+    .valid-feedback{
+      display: none;
     }
   }
 
@@ -55,4 +54,8 @@ body{
       font-size: small;
     }
   }
+}
+.picture{
+  height: 60px;
+  width: 60px;
 }
