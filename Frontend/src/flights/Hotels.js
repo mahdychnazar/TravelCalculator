@@ -1,17 +1,22 @@
 var destinationInfo = null;
-var hotelsInfo = [];
+
 
 var Templates = require('../Templates');
 var $hotelsList = $("#hotelsList");
+
+var $yourHotel = $("#yourHotel");
+
+
+
 /*var checkInDate = new Date();
 var checkOutDate = new Date();*/
 
 
-function getHotels(checkInDate, checkOutDate, destinationID){
+function getHotels(checkInDate, checkOutDate, destinationID, amount){
     const settings = {
         "async": true,
         "crossDomain": true,
-        "url": "https://hotels4.p.rapidapi.com/properties/list?destinationId="+destinationID+"&pageNumber=1&checkIn=" + checkInDate + "&checkOut="+checkOutDate+"&pageSize=25&adults1=1&currency=UAH&locale=uk-UA&sortOrder=PRICE",
+        "url": "https://hotels4.p.rapidapi.com/properties/list?destinationId="+destinationID+"&pageNumber=1&checkIn=" + checkInDate + "&checkOut="+checkOutDate+"&pageSize=" + amount + "&adults1=1&currency=UAH&locale=uk-UA&sortOrder=PRICE",
         "method": "GET",
         "headers": {
             "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
@@ -38,8 +43,14 @@ function getDestinationID(place, startDate, finishDate){
 
     $.ajax(settings).done(function (response) {
          console.log(response);
-        destinationInfo = response.suggestions[0].entities[0];
-        getHotels(startDate, finishDate, destinationInfo.destinationId);
+         if(response.suggestions[0].entities.length != 0){
+             destinationInfo = response.suggestions[0].entities[0];
+             var hotelsNumber = $('#hotelsNum').val();
+             getHotels(startDate, finishDate, destinationInfo.destinationId, hotelsNumber);
+         }
+         else{
+             $hotelsList.html("готелі не знайдено");
+         }
 
     });
 }
@@ -47,10 +58,28 @@ function getDestinationID(place, startDate, finishDate){
 function showHotels(hotelsInfo){
     $hotelsList.html("");
     for(let i = 0; i < hotelsInfo.length; i++) {
-        var html_code = Templates.HotelTamplate({hotel: hotelsInfo[i]});
-        var $node = $(html_code);
-        $hotelsList.append($node);
+
+        showOneHotel(hotelsInfo[i]);
     }
+
+}
+function showOneHotel(oneHotelInfo){
+    var html_code = Templates.HotelTamplate({hotel: oneHotelInfo});
+    var $node = $(html_code);
+    $node.find(".chooseHotel").click(function(){
+        chooseHotel(oneHotelInfo);
+    });
+    $hotelsList.append($node);
+}
+
+function chooseHotel(oneHotelInfo){
+    $yourHotel.html("");
+    var html_code = Templates.HotelTamplate({hotel: oneHotelInfo});
+    var $node = $(html_code);
+    $yourHotel.append($node);
+    $node.find(".chooseHotel").click(function(){
+        $yourHotel.html("");
+    });
 
 }
 
@@ -58,6 +87,7 @@ function initialize(){
     $("#calcButton").click(function () {
         $hotelsList.html("Шукаю готелі...");
         destinationInfo = null;
+
         addressTo = $("#arrival").val();
         startDate = $("#firstDate").val();
         finishDate = $("#secondDate").val();

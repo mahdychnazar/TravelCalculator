@@ -7,7 +7,6 @@ function initialize(){
     var minDate = (year +"-"+ month +"-"+ day);
     $('#firstDate').attr('min',minDate);
     $('#secondDate').attr('min',minDate);
-    //console.log(startDate);
     startDate = minDate;
     finishDate = minDate;
     $('#firstDate').on("input", function(){

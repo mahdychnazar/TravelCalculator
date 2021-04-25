@@ -16,6 +16,10 @@ var finishDate = new Date();
 
 var Templates = require('../Templates');
 var $flightsList = $("#flightsList");
+var $backFlightList = $("#backFlightsList");
+
+var $yourFlights = $("#yourFlight");
+
 
 
 
@@ -33,34 +37,64 @@ function getPlaceID(addressFrom, addressTo, startDate) {
 
     $.ajax(settings).done(function (response) {
         console.log(response);
-        cityFromID = response.Places[0].PlaceId;
-        console.log(cityFromID);
-        const settings = {
-            "async": false,
-            "crossDomain": true,
-            "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/UA/UAH/uk-UA/?query=" + addressTo,
-            "method": "GET",
-            "headers": {
-                "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
-                "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
-            }
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            cityToID = response.Places[0].PlaceId;
+        if(response.Places.length != 0) {
+            cityFromID = response.Places[0].PlaceId;
+            $("#departure-error").removeClass("invalid-feedback");
+            $("#departure-error").addClass("valid-feedback");
             console.log(cityFromID);
-            getFlights(cityFromID, cityToID, startDate);
+        }
+        else{
+            $flightsList.html("Авіарейси не знайдено...");
+            $backFlightList.html("Авіарейси не знайдено...");
+            $("#departure-error").removeClass("valid-feedback");
+            $("#departure-error").addClass("invalid-feedback");
+            $("#departure").removeClass("is-valid");
+            $("#departure").addClass("is-invalid");
+        }
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0/UA/UAH/uk-UA/?query=" + addressTo,
+                "method": "GET",
+                "headers": {
+                    "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+                    "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com"
+                }
+            };
+
+            $.ajax(settings).done(function (response) {
+                console.log(response);
+                if(response.Places.length !== 0) {
+                    cityToID = response.Places[0].PlaceId;
+                    $("#arrival-error").removeClass("invalid-feedback");
+                    $("#arrival-error").addClass("valid-feedback");
+                    console.log(cityToID);
+                    if(cityFromID != null && cityToID != null) {
+                        getFlights(cityFromID, cityToID, startDate, $flightsList);
+                        if (document.getElementById("backFlightCheck").checked) {
+                            getFlights(cityToID, cityFromID, finishDate, $backFlightList);
+                        }
+                    }
+                }
+                else{
+                    $flightsList.html("Авіарейси не знайдено...");
+                    $backFlightList.html("Авіарейси не знайдено...");
+                    $("#arrival-error").removeClass("valid-feedback");
+                    $("#arrival-error").addClass("invalid-feedback");
+                    $("#arrival").removeClass("is-valid");
+                    $("#arrival").addClass("is-invalid");
+                }
 
 
-        });
+            });
     })
+
 }
 
 
-function getFlights(placeFrom, placeTo, departureDate){
+function getFlights(placeFrom, placeTo, departureDate, htmlEl){
     const settings = {
-        "async": false,
+        "async": true,
         "crossDomain": true,
         "url": "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/UA/UAH/uk-UA/" + placeFrom + "/" + placeTo + "/" + departureDate,
         "method": "GET",
@@ -72,7 +106,13 @@ function getFlights(placeFrom, placeTo, departureDate){
 
     $.ajax(settings).done(function (response) {
         console.log(response);
-        showFlights(flightInfo(response));
+        if(response.Quotes.length != 0){
+            showFlights(flightInfo(response),htmlEl);
+        }
+        else{
+            htmlEl.html("Авіарейси не знайдено...");
+        }
+
     });
 }
 function flightInfo(flights){
@@ -85,6 +125,7 @@ function flightInfo(flights){
             date: flights.Quotes[i].OutboundLeg.DepartureDate,
             origin: getOrigin(flights, i+1),
             destination: getDestination(flights, i+1),
+            isBack: false,
 
         }
 
@@ -118,17 +159,37 @@ function getDestination(flights, QuoteId){
         }
     }
 }
-function showFlights(flightInfo){
-    $flightsList.html("");
+function showFlights(flightInfo, htmlEl){
+    htmlEl.html("");
     for(let i = 0; i < flightInfo.length; i++) {
-        var html_code = Templates.FlightTamplate({flight: flightInfo[i]});
-        var $node = $(html_code);
-        $flightsList.append($node);
+        showOneFlight(flightInfo[i], htmlEl);
+
     }
 
 }
+function showOneFlight(oneFlightInfo, htmlEl){
+    var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
+    var $node = $(html_code);
+    //htmlEl.append($node);
+    $node.find(".chooseFlight").click(function () {
+        chooseFlight(oneFlightInfo);
+    });
+    htmlEl.append($node);
+}
+function chooseFlight(oneFlightInfo){
+    $yourFlights.html("");
+    var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
+    var $node = $(html_code);
+    $yourFlights.append($node);
+    $node.find(".chooseFlight").click(function(){
+        $yourFlights.html("");
+    });
+
+}
+
 function showNotFount(){
     $flightsList.html("");
+
 }
 
 
@@ -143,46 +204,17 @@ function initialize() {
         addressFrom = $("#departure").val();
         startDate = $("#firstDate").val();
         finishDate = $("#secondDate").val();
+         if(document.getElementById("backFlightCheck").checked){
+             $backFlightList.html("Шукаю авіарейси...");
+         }
+         else{
+             $backFlightList.html("");
+         }
+        $flightsList.html("Шукаю авіарейси...");
 
-        getPlaceID(addressFrom, addressTo, startDate);
-        /*console.log(places);
-        if(places.Places.length != 0){
-            cityFromID = places.Places[0].CityId;
-            countryFromID = places.Places[0].CountryId;
-            $("#departure-error").removeClass("invalid-feedback");
-            $("#departure-error").addClass("valid-feedback");
-        }
-        else{
-            $("#departure-error").removeClass("valid-feedback");
-            $("#departure-error").addClass("invalid-feedback");
-            $("#departure").removeClass("is-valid");
-            $("#departure").addClass("is-invalid");
-        }
+        getPlaceID(addressFrom, addressTo, startDate, $flightsList);
 
-        places = getPlaceID(addressTo).responseJSON;
-        console.log(places);
-        if(places.Places.length !== 0) {
-            cityToID = places.Places[0].CityId;
-            countryToID = places.Places[0].CountryId;
-            $("#arrival-error").removeClass("invalid-feedback");
-            $("#arrival-error").addClass("valid-feedback");
-        }
-        else{
-            $("#arrival-error").removeClass("valid-feedback");
-            $("#arrival-error").addClass("invalid-feedback");
-            $("#arrival").removeClass("is-valid");
-            $("#arrival").addClass("is-invalid");
-        }
-        console.log(cityToID);
-        console.log(cityFromID);
 
-        if(cityToID !== null && cityFromID !== null  && !isNaN(new Date(startDate).getTime()) ){
-            flights = getFlights(cityFromID, cityToID, startDate).responseJSON;
-            showFlights(flightInfo(flights));
-        }
-        else{
-            showNotFount();
-        }*/
 
     });
 }

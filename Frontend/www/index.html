@@ -53,10 +53,41 @@
                 <div class="valid-feedback" id = "arrival-error">
                     Місто не знайдено!!!.
                 </div>
+             </div>
         </div>
-        <div>
-            <button class="btn btn-primary" type="button" id = "calcButton">Calculate!</button>
+        <div class="row">
+
+            <div class = col-md-4>
+                <div class="form-group">
+                    <label for="hotelsNum">Шукати готелі: </label>
+                    <select class="form-control" id="hotelsNum">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
+                        <option>25</option>
+                    </select>
+                </div>
+            </div>
+            <div class = col-md-4>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="backFlightCheck">
+                    <label class="form-check-label" for="backFlightCheck">
+                        Шукати зворотній рейс?
+                    </label>
+                    </div>
+            </div>
+            <div class = col-md-4>
+                <div class="form-group">
+
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="button" id = "calcButton">Calculate!</button>
+                        </div>
+                    </div>
+            </div>
+
         </div>
+
     </form>
 
 <div id = "map">
@@ -70,21 +101,37 @@
 <div id = "flightsList">
 
 </div>
+    <div>
+        <span>
+            Зворотні Рейси:
+        </span>
+    </div>
+    <div id = "backFlightsList">
+
+    </div>
 
 <div>
     <span>
         Готелі:
     </span>
 </div>
-<div id = "hotelsList">
-    <div class="valid-feedback" id = "hotels-error">
-        Рейсв немає!!!
+    <div id = "hotelsList">
+
+    </div>
+
+<div>
+    <span>
+        Ваша поїздка:
+    </span>
+</div>
+<div id = "yourFlight">
+
+</div>
+    <div id = "yourHotel">
+
     </div>
 </div>
-
 </div>
-
-
 
 <!-- jQuery JavaScript -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
