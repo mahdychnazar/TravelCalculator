@@ -101,10 +101,10 @@ exports.initialize = initialize;
 
 var ejs = require('ejs');
 
-exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.origin%></div>\n        <div><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"price\"><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button>обрати</button>\n    </div>\n</div>");
+exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"origin\"><%= flight.origin%></div>\n        <div class = \"destination\"><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"price\"><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button>обрати</button>\n    </div>\n</div>");
 
-exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"price\"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
-},{"ejs":7}],3:[function(require,module,exports){
+exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"name\"><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"price\"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n    <div class =\"hidden\"><%= hotel.coordinate%></div>\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
+},{"ejs":8}],3:[function(require,module,exports){
 var addressFrom;
 var addressTo;
 
@@ -116,6 +116,7 @@ var startDate = new Date();
 var finishDate = new Date();
 
 var Templates = require('../Templates');
+var Maps = require("./Maps");
 var $flightsList = $("#flightsList");
 var $backFlightList = $("#backFlightsList");
 
@@ -295,6 +296,7 @@ function chooseFlight(oneFlightInfo){
         getSum()
     });
     getSum();
+    Maps.visualizeFlight();
 
 }
 function chooseBackFlight(oneFlightInfo){
@@ -307,6 +309,7 @@ function chooseBackFlight(oneFlightInfo){
         getSum()
     });
     getSum();
+    Maps.visualizeFlight();
 
 }
 
@@ -353,7 +356,7 @@ function initialize() {
 exports.initialize = initialize;
 exports.getSum = getSum;
 
-},{"../Templates":2}],4:[function(require,module,exports){
+},{"../Templates":2,"./Maps":5}],4:[function(require,module,exports){
 var destinationInfo = null;
 
 var Flights = require("./Flights");
@@ -460,9 +463,116 @@ function initialize(){
 
 exports.initialize = initialize;
 },{"../Templates":2,"./Flights":3}],5:[function(require,module,exports){
+var html_element = document.getElementById("map");
+
+var colorTo = "#ff0000";
+var colorBack = "#00ff00"
+var $yourFlights = $("#yourFlight");
+var $yourBackFlights = $("#yourBackFlight");
+var $yourHotel = $("#yourHotel");
+
+var map;
+
+function visualizeFlight(){
+    var departurePoint = null;
+    var arrivalPoint = null;
+    if($yourFlights.find(".origin").length != 0 && $yourFlights.find(".destination").length != 0){
+        departurePoint= $yourFlights.find(".origin")[0].firstChild.data;
+        arrivalPoint = $yourFlights.find(".destination")[0].firstChild.data;
+        console.log(departurePoint);
+        console.log(arrivalPoint);
+        geocodeAirportAddress(departurePoint, arrivalPoint, colorTo);
+    }
+    if($yourBackFlights.find(".origin").length != 0 && $yourBackFlights.find(".destination").length != 0){
+        departurePoint= $yourBackFlights.find(".origin")[0].firstChild.data;
+        arrivalPoint = $yourBackFlights.find(".destination")[0].firstChild.data;
+        console.log(departurePoint);
+        console.log(arrivalPoint);
+        geocodeAirportAddress(departurePoint, arrivalPoint, colorBack);
+    }
+    if($yourHotel.find(".price").length !=0){
+        departurePoint = $yourFlights.find(".destination")[0].firstChild.data;
+        arrivalPoint = $yourHotel.find(".name")[0].firstChild.data;
+        calculateRoute(departurePoint, arrivalPoint);
+    }
+}
+
+function geocodeAirportAddress(address1, address2, color) {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ 'address': address1 }, function (results, status) {
+        temp = results[0].geometry.location;
+        geocoder.geocode({ 'address': address2 }, function (results, status) {
+            temp2 = results[0].geometry.location;
+            new google.maps.Marker({
+                position: temp,
+                map: map,
+                icon:"../www/assets/images/takeoff.png",
+            });
+            new google.maps.Marker({
+                position: temp2,
+                map: map,
+                icon:"../www/assets/images/landing.png",
+            });
+
+            var route = [
+                temp,
+                temp2
+            ];
+
+            var polyline = new google.maps.Polyline({
+                geodesic: true,
+                path: route,
+                strokeColor: color,
+                strokeOpacity: 0.6,
+                strokeWeight: 5
+            });
+
+            polyline.setMap(map);
+        });
+    });
+}
+var directionsDisplay = null;
+function calculateRoute(address1, address2) {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ 'address': address1 }, function (results, status) {
+        temp = results[0].geometry.location;
+        geocoder.geocode({ 'address': address2 }, function (results, status) {
+            temp2 = results[0].geometry.location;
+
+            directionsDisplay = new google.maps.DirectionsRenderer();
+
+            var request = {
+                origin: temp,
+                destination: temp2,
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+
+            directionsService.route(request, function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                }
+            });
+
+            directionsDisplay.setMap(map);
+        });
+    });
+}
+
+function initialize(){
+
+    var mapProp = {
+        center: new google.maps.LatLng(50.072, 14.4724),
+        zoom: 5
+    };
+    map = new google.maps.Map(html_element, mapProp);
+}
+exports.initialize = initialize;
+exports.visualizeFlight = visualizeFlight;
+},{}],6:[function(require,module,exports){
 var Flights = require("./flights/Flights");
 var Hotels = require("./flights/Hotels");
 var Forms = require("./Forms");
+var Maps = require("./flights/Maps");
 
 
 
@@ -470,14 +580,15 @@ $(function() {
     Flights.initialize();
     Forms.initialize();
     Hotels.initialize();
+    Maps.initialize();
 
 });
 
 
 
-},{"./Forms":1,"./flights/Flights":3,"./flights/Hotels":4}],6:[function(require,module,exports){
+},{"./Forms":1,"./flights/Flights":3,"./flights/Hotels":4,"./flights/Maps":5}],7:[function(require,module,exports){
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -1459,7 +1570,7 @@ if (typeof window != 'undefined') {
   window.ejs = exports;
 }
 
-},{"../package.json":9,"./utils":8,"fs":6,"path":10}],8:[function(require,module,exports){
+},{"../package.json":10,"./utils":9,"fs":7,"path":11}],9:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -1628,7 +1739,7 @@ exports.cache = {
   }
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -1701,7 +1812,7 @@ module.exports={
   "version": "2.7.4"
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (process){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
 // backported and transplited with Babel, with backwards-compat fixes
@@ -2007,7 +2118,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":11}],11:[function(require,module,exports){
+},{"_process":12}],12:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2193,4 +2304,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[5]);
+},{}]},{},[6]);

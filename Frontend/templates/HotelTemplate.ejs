@@ -3,7 +3,7 @@
         <img src="assets/images/hotel.png" class="picture">
     </div>
     <div class = "col-md-3">
-        <div><%= hotel.name%></div>
+        <div class = "name"><%= hotel.name%></div>
         <div><%= hotel.address.streetAddress%></div>
     </div>
     <div class = "col-md-3">
@@ -14,6 +14,7 @@
         <div class = "price"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>
         <div>грн/ніч</div>
     </div>
+    <div class ="hidden"><%= hotel.coordinate%></div>
     <div class = "col-md-2 chooseHotel">
         <button>обрати</button>
     </div>

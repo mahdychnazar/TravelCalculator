@@ -13,10 +13,6 @@ if (navigator.geolocation){
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
             };
-            const marker = new google.maps.Marker({
-                position: pos,
-                map: map,
-            });
                 geocodeLatLng(pos, function (err, address) {
                 if (err === null) {
                     $("#departure").val(address);
@@ -76,18 +72,13 @@ function findAddress(err, coordinates) {
     if (err === null){
         geocodeLatLng(coordinates, function (err, address) {
             if (err === null) {
-                if (pointMarker !== null){
-                    pointMarker.setMap(null);
-                }
-                pointMarker = new google.maps.Marker({
-                    position: coordinates,
-                    map: map,
-                });
                 $("#arrival").val(address);
             }
         });
     }
 }
+
+
 
 $("#calcButton").click(function (){
     var addr = $("#arrival").val();

@@ -9,6 +9,7 @@ var startDate = new Date();
 var finishDate = new Date();
 
 var Templates = require('../Templates');
+var Maps = require("./Maps");
 var $flightsList = $("#flightsList");
 var $backFlightList = $("#backFlightsList");
 
@@ -188,6 +189,7 @@ function chooseFlight(oneFlightInfo){
         getSum()
     });
     getSum();
+    Maps.visualizeFlight();
 
 }
 function chooseBackFlight(oneFlightInfo){
@@ -200,6 +202,7 @@ function chooseBackFlight(oneFlightInfo){
         getSum()
     });
     getSum();
+    Maps.visualizeFlight();
 
 }
 
