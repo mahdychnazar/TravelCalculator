@@ -1,5 +1,6 @@
 var destinationInfo = null;
 
+var Flights = require("./Flights");
 
 var Templates = require('../Templates');
 var $hotelsList = $("#hotelsList");
@@ -79,8 +80,14 @@ function chooseHotel(oneHotelInfo){
     $yourHotel.append($node);
     $node.find(".chooseHotel").click(function(){
         $yourHotel.html("");
+        Flights.getSum();
     });
+    Flights.getSum();
+}
+function getPrice(oneHotelInfo){
+    var Days = Math.floor((new Date(finishDate).getTime() - new Date(startDate).getTime())/(1000*60*60*24));
 
+    return +(+oneHotelInfo.ratePlan.price.current.split(' ')[0] * +Days);
 }
 
 function initialize(){

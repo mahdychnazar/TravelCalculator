@@ -101,9 +101,9 @@ exports.initialize = initialize;
 
 var ejs = require('ejs');
 
-exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.origin%></div>\n        <div><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button>обрати</button>\n    </div>\n</div>");
+exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.origin%></div>\n        <div><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"price\"><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button>обрати</button>\n    </div>\n</div>");
 
-exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.ratePlan.price.current%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
+exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"price\"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
 },{"ejs":7}],3:[function(require,module,exports){
 var addressFrom;
 var addressTo;
@@ -111,12 +111,6 @@ var addressTo;
 var cityFromID = null;
 var cityToID = null;
 
-var countryFromID = null;
-var countryToID = null;
-
-
-var places;
-var flights;
 
 var startDate = new Date();
 var finishDate = new Date();
@@ -126,6 +120,8 @@ var $flightsList = $("#flightsList");
 var $backFlightList = $("#backFlightsList");
 
 var $yourFlights = $("#yourFlight");
+var $yourBackFlights = $("#yourBackFlight");
+var $yourHotel = $("#yourHotel");
 
 
 
@@ -232,7 +228,7 @@ function flightInfo(flights){
             date: flights.Quotes[i].OutboundLeg.DepartureDate,
             origin: getOrigin(flights, i+1),
             destination: getDestination(flights, i+1),
-            isBack: false,
+            //isBack: false,
 
         }
 
@@ -279,7 +275,13 @@ function showOneFlight(oneFlightInfo, htmlEl){
     var $node = $(html_code);
     //htmlEl.append($node);
     $node.find(".chooseFlight").click(function () {
-        chooseFlight(oneFlightInfo);
+        if(htmlEl == $flightsList){
+            chooseFlight(oneFlightInfo);
+        }
+        else{
+            chooseBackFlight(oneFlightInfo);
+        }
+
     });
     htmlEl.append($node);
 }
@@ -287,16 +289,42 @@ function chooseFlight(oneFlightInfo){
     $yourFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
-    $yourFlights.append($node);
+        $yourFlights.append($node);
     $node.find(".chooseFlight").click(function(){
         $yourFlights.html("");
+        getSum()
     });
+    getSum();
+
+}
+function chooseBackFlight(oneFlightInfo){
+    $yourBackFlights.html("");
+    var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
+    var $node = $(html_code);
+    $yourBackFlights.append($node);
+    $node.find(".chooseFlight").click(function(){
+        $yourBackFlights.html("");
+        getSum()
+    });
+    getSum();
 
 }
 
-function showNotFount(){
-    $flightsList.html("");
+function getSum(){
+    let totalSum = 0;
+    if($yourFlights.find(".price").length != 0){
+        totalSum += Number($yourFlights.find(".price")[0].firstChild.data);
+    }
+    if($yourBackFlights.find(".price").length != 0){
+        totalSum += Number($yourBackFlights.find(".price")[0].firstChild.data);
+    }
+    if($yourHotel.find(".price").length!=0){
+        var Days = Math.floor((new Date(finishDate).getTime() - new Date(startDate).getTime())/(1000*60*60*24));
+        totalSum += Days * Number(($yourHotel.find(".price")[0].firstChild.data));
 
+    }
+    console.log(totalSum);
+    document.getElementById("sum").innerHTML = totalSum;
 }
 
 
@@ -320,15 +348,15 @@ function initialize() {
         $flightsList.html("Шукаю авіарейси...");
 
         getPlaceID(addressFrom, addressTo, startDate, $flightsList);
-
-
-
     });
 }
 exports.initialize = initialize;
+exports.getSum = getSum;
+
 },{"../Templates":2}],4:[function(require,module,exports){
 var destinationInfo = null;
 
+var Flights = require("./Flights");
 
 var Templates = require('../Templates');
 var $hotelsList = $("#hotelsList");
@@ -408,8 +436,14 @@ function chooseHotel(oneHotelInfo){
     $yourHotel.append($node);
     $node.find(".chooseHotel").click(function(){
         $yourHotel.html("");
+        Flights.getSum();
     });
+    Flights.getSum();
+}
+function getPrice(oneHotelInfo){
+    var Days = Math.floor((new Date(finishDate).getTime() - new Date(startDate).getTime())/(1000*60*60*24));
 
+    return +(+oneHotelInfo.ratePlan.price.current.split(' ')[0] * +Days);
 }
 
 function initialize(){
@@ -425,7 +459,7 @@ function initialize(){
 }
 
 exports.initialize = initialize;
-},{"../Templates":2}],5:[function(require,module,exports){
+},{"../Templates":2,"./Flights":3}],5:[function(require,module,exports){
 var Flights = require("./flights/Flights");
 var Hotels = require("./flights/Hotels");
 var Forms = require("./Forms");
@@ -436,11 +470,6 @@ $(function() {
     Flights.initialize();
     Forms.initialize();
     Hotels.initialize();
-
-
-
-
-
 
 });
 

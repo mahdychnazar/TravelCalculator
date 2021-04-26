@@ -4,12 +4,6 @@ var addressTo;
 var cityFromID = null;
 var cityToID = null;
 
-var countryFromID = null;
-var countryToID = null;
-
-
-var places;
-var flights;
 
 var startDate = new Date();
 var finishDate = new Date();
@@ -19,6 +13,8 @@ var $flightsList = $("#flightsList");
 var $backFlightList = $("#backFlightsList");
 
 var $yourFlights = $("#yourFlight");
+var $yourBackFlights = $("#yourBackFlight");
+var $yourHotel = $("#yourHotel");
 
 
 
@@ -125,7 +121,7 @@ function flightInfo(flights){
             date: flights.Quotes[i].OutboundLeg.DepartureDate,
             origin: getOrigin(flights, i+1),
             destination: getDestination(flights, i+1),
-            isBack: false,
+            //isBack: false,
 
         }
 
@@ -172,7 +168,13 @@ function showOneFlight(oneFlightInfo, htmlEl){
     var $node = $(html_code);
     //htmlEl.append($node);
     $node.find(".chooseFlight").click(function () {
-        chooseFlight(oneFlightInfo);
+        if(htmlEl == $flightsList){
+            chooseFlight(oneFlightInfo);
+        }
+        else{
+            chooseBackFlight(oneFlightInfo);
+        }
+
     });
     htmlEl.append($node);
 }
@@ -180,16 +182,42 @@ function chooseFlight(oneFlightInfo){
     $yourFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
-    $yourFlights.append($node);
+        $yourFlights.append($node);
     $node.find(".chooseFlight").click(function(){
         $yourFlights.html("");
+        getSum()
     });
+    getSum();
+
+}
+function chooseBackFlight(oneFlightInfo){
+    $yourBackFlights.html("");
+    var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
+    var $node = $(html_code);
+    $yourBackFlights.append($node);
+    $node.find(".chooseFlight").click(function(){
+        $yourBackFlights.html("");
+        getSum()
+    });
+    getSum();
 
 }
 
-function showNotFount(){
-    $flightsList.html("");
+function getSum(){
+    let totalSum = 0;
+    if($yourFlights.find(".price").length != 0){
+        totalSum += Number($yourFlights.find(".price")[0].firstChild.data);
+    }
+    if($yourBackFlights.find(".price").length != 0){
+        totalSum += Number($yourBackFlights.find(".price")[0].firstChild.data);
+    }
+    if($yourHotel.find(".price").length!=0){
+        var Days = Math.floor((new Date(finishDate).getTime() - new Date(startDate).getTime())/(1000*60*60*24));
+        totalSum += Days * Number(($yourHotel.find(".price")[0].firstChild.data));
 
+    }
+    console.log(totalSum);
+    document.getElementById("sum").innerHTML = totalSum;
 }
 
 
@@ -213,9 +241,7 @@ function initialize() {
         $flightsList.html("Шукаю авіарейси...");
 
         getPlaceID(addressFrom, addressTo, startDate, $flightsList);
-
-
-
     });
 }
 exports.initialize = initialize;
+exports.getSum = getSum;

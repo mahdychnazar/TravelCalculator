@@ -9,11 +9,6 @@ $(function() {
     Forms.initialize();
     Hotels.initialize();
 
-
-
-
-
-
 });
 
 
