@@ -3,6 +3,26 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Trip Calculator</title>
+    <style>
+        button.btn.hotelbtn {
+            background-color: coral;
+            border-color: orange;
+        }
+
+        button.btn.flightbtn {
+            background-color: forestgreen;
+            border-color: darkgreen;
+        }
+
+        .inline {
+            display: inline;
+        }
+
+        .text {
+            border-bottom: black;
+            border-width: 2px;
+        }
+    </style>
 
     <!-- Bootsrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
@@ -53,7 +73,7 @@
                 <div class="valid-feedback" id = "arrival-error">
                     Місто не знайдено!!!.
                 </div>
-             </div>
+            </div>
         </div>
         <div class="row">
 
@@ -71,65 +91,69 @@
             </div>
             <div class = col-md-4>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="backFlightCheck">
-                    <label class="form-check-label" for="backFlightCheck">
-                        Шукати зворотній рейс?
-                    </label>
+                    <div class = "boxCheck">
+                        <input class="form-check-input" type="checkbox" id="backFlightCheck">
+                        <label class="form-check-label" for="backFlightCheck">
+                            Шукати зворотній рейс?
+                        </label>
                     </div>
+                </div>
             </div>
             <div class = col-md-4>
                 <div class="form-group">
 
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="button" id = "calcButton">Calculate!</button>
-                        </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="button" id = "calcButton">Calculate!</button>
                     </div>
+                </div>
             </div>
 
         </div>
 
     </form>
 
-<div id = "map">
+    <div id = "map">
 
-</div>
-<div>
-    <span>
+    </div class = "fl">
+    <div id="flight" class = "text">
+    <span class = "title">
         Рейси:
     </span>
-</div>
-<div id = "flightsList">
-
-</div>
-    <div>
-        <span>
-            Зворотні Рейси:
-        </span>
     </div>
-    <div id = "backFlightsList">
+    <div id="flightsList">
 
     </div>
+    <div id="flightBack" class = "text">
+    <span class = "title">
+        Зворотні Рейси:
+    </span>
+    </div>
+    <div id="backFlightsList">
 
-<div>
-    <span>
+    </div>
+
+    <div id="hotel" class = "text">
+    <span class = "title">
         Готелі:
     </span>
-</div>
-    <div id = "hotelsList">
+    </div>
+    <div id="hotelsList">
 
     </div>
 
-<div>
-    <span>
+    <div  id="summary" class = "text">
+    <span class = "title">
         Ваша поїздка:
     </span>
-</div>
+    </div>
+    <div id = "myTrip">
     <div id = "yourFlight"></div>
 
     <div id = "yourBackFlight"></div>
 
     <div id = "yourHotel"></div>
-    <div id = "sum">0</div>
+    <div  id="sum1" class="inline bigTitle"> Ваша поїздка коштує: <div id = "sum" class="inline">0</div> грн. </div>
+    </div>
 </div>
 
 

@@ -1,25 +1,36 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
-function initialize(){
+function initialize() {
+    document.getElementById('flight').hidden = true;
+    document.getElementById('flightBack').hidden = true;
+    document.getElementById('hotel').hidden = true;
+    document.getElementById('summary').hidden = true;
+    document.getElementById('sum').hidden = true;
+    document.getElementById('sum1').hidden = true;
+    document.getElementById('flightsList').hidden = true;
+    document.getElementById('backFlightsList').hidden = true;
+    document.getElementById('hotelsList').hidden = true;
+    document.getElementById('myTrip').hidden = true;
+
     var todaysDate = new Date();
     var year = todaysDate.getFullYear();
     var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);
     var day = ("0" + todaysDate.getDate()).slice(-2);
-    var minDate = (year +"-"+ month +"-"+ day);
-    $('#firstDate').attr('min',minDate);
-    $('#secondDate').attr('min',minDate);
+    var minDate = (year + "-" + month + "-" + day);
+    $('#firstDate').attr('min', minDate);
+    $('#secondDate').attr('min', minDate);
     startDate = minDate;
     finishDate = minDate;
-    $('#firstDate').on("input", function(){
+    $('#firstDate').on("input", function () {
         startDate = document.getElementById("firstDate").value;
         console.log(startDate);
-        if(startDate > finishDate || startDate < minDate){
+        if (startDate > finishDate || startDate < minDate) {
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
             $("#secondDate").addClass("is-invalid");
         }
-        else{
+        else {
             $("#firstDate").removeClass("is-invalid");
             $("#firstDate").addClass("is-valid");
             $("#secondDate").removeClass("is-invalid");
@@ -29,16 +40,16 @@ function initialize(){
 
 
     })
-    $('#secondDate').on("input", function(){
+    $('#secondDate').on("input", function () {
         finishDate = document.getElementById("secondDate").value;
         console.log(finishDate);
-        if(startDate > finishDate || startDate < minDate){
+        if (startDate > finishDate || startDate < minDate) {
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
             $("#secondDate").addClass("is-invalid");
         }
-        else{
+        else {
             $("#firstDate").removeClass("is-invalid");
             $("#firstDate").addClass("is-valid");
             $("#secondDate").removeClass("is-invalid");
@@ -46,29 +57,29 @@ function initialize(){
         }
         $('#firstDate').attr('max', finishDate);
     })
-    $('#arrival').on("input", function(){
+    $('#arrival').on("input", function () {
         var city = $('#arrival').val();
         //console.log(city);
-        if(!checkName(city)){
+        if (!checkName(city)) {
             $("#arrival").removeClass("is-valid");
             $("#arrival").addClass("is-invalid");
 
         }
-        else{
+        else {
             $("#arrival").removeClass("is-invalid");
             $("#arrival").addClass("is-valid");
         }
     })
 
-    $('#departure').on("input", function(){
+    $('#departure').on("input", function () {
         var city = $('#departure').val();
-       // console.log(city);
-        if(!checkName(city)){
+        // console.log(city);
+        if (!checkName(city)) {
             $("#departure").removeClass("is-valid");
             $("#departure").addClass("is-invalid");
 
         }
-        else{
+        else {
             $("#departure").removeClass("is-invalid");
             $("#departure").addClass("is-valid");
         }
@@ -76,7 +87,7 @@ function initialize(){
 
 }
 function isCharName(c) {
-    if(c == " " || c == "'" || c == "-" || (c.toUpperCase() != c.toLowerCase())){
+    if (c == " " || c == "'" || c == "-" || (c.toUpperCase() != c.toLowerCase())) {
         return true;
     }
 
@@ -101,9 +112,9 @@ exports.initialize = initialize;
 
 var ejs = require('ejs');
 
-exports.FlightTamplate = ejs.compile("\n<div class = \"row\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"origin\"><%= flight.origin%></div>\n        <div class = \"destination\"><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"price\"><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button>обрати</button>\n    </div>\n</div>");
+exports.FlightTamplate = ejs.compile("\n\n<div class = \"row template\">\n    <div class = \"col-md-1\">\n        <img src=\"assets/images/flight.png\" class=\"picture\">\n    </div>\n    <div class = \"col-md-3\">\n        <div><%= flight.date.split('T')[0]%></div>\n        <div><%= flight.carrier%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"origin\"><%= flight.origin%></div>\n        <div class = \"destination\"><%= flight.destination%></div>\n    </div>\n    <div class = \"col-md-3\">\n        <div class = \"price\"><%= flight.minPrice%></div>\n        <div>грн</div>\n    </div>\n    <div class = \"col-md-2 chooseFlight\">\n        <button class='btn btn-primary flightbtn'>обрати</button>\n    </div>\n</div>");
 
-exports.HotelTamplate = ejs.compile("<div class = \"row\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"name\"><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"price\"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n    <div class =\"hidden\"><%= hotel.coordinate%></div>\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button>обрати</button>\r\n    </div>\r\n\r\n</div>");
+exports.HotelTamplate = ejs.compile("<div class = \"row template\">\r\n    <div class = \"col-md-1\">\r\n        <img src=\"assets/images/hotel.png\" class=\"picture\">\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"name\"><%= hotel.name%></div>\r\n        <div><%= hotel.address.streetAddress%></div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div><%= hotel.starRating%></div>\r\n        <div>зірок</div>\r\n    </div>\r\n    <div class = \"col-md-3\">\r\n        <div class = \"price\"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>\r\n        <div>грн/ніч</div>\r\n    </div>\r\n\r\n    <div class = \"col-md-2 chooseHotel\">\r\n        <button class='btn btn-primary hotelbtn'>обрати</button>\r\n    </div>\r\n\r\n</div>");
 },{"ejs":8}],3:[function(require,module,exports){
 var addressFrom;
 var addressTo;
@@ -287,6 +298,9 @@ function showOneFlight(oneFlightInfo, htmlEl){
     htmlEl.append($node);
 }
 function chooseFlight(oneFlightInfo){
+    document.getElementById('summary').hidden = false;
+    document.getElementById('sum').hidden = false;
+    document.getElementById('sum1').hidden = false;
     $yourFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
@@ -294,12 +308,16 @@ function chooseFlight(oneFlightInfo){
     $node.find(".chooseFlight").click(function(){
         $yourFlights.html("");
         getSum()
+
     });
     getSum();
     Maps.visualizeFlight();
 
 }
 function chooseBackFlight(oneFlightInfo){
+    document.getElementById('summary').hidden = false;
+    document.getElementById('sum').hidden = false;
+    document.getElementById('sum1').hidden = false;
     $yourBackFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
@@ -334,7 +352,15 @@ function getSum(){
 
 function initialize() {
     $("#calcButton").click(function () {
+        Maps.initialize();
+        document.getElementById('flightsList').hidden = false;
+        document.getElementById('backFlightsList').hidden = false;
+        document.getElementById('hotelsList').hidden = false;
+        document.getElementById('myTrip').hidden = false;
+        document.getElementById('flight').hidden = false;
+        document.getElementById('hotel').hidden = false;
         $flightsList.html("Шукаю авіарейси...");
+
         cityToID = null;
         cityFromID = null;
 
@@ -343,6 +369,7 @@ function initialize() {
         startDate = $("#firstDate").val();
         finishDate = $("#secondDate").val();
          if(document.getElementById("backFlightCheck").checked){
+             document.getElementById('flightBack').hidden = false;
              $backFlightList.html("Шукаю авіарейси...");
          }
          else{
@@ -367,9 +394,6 @@ var $hotelsList = $("#hotelsList");
 var $yourHotel = $("#yourHotel");
 
 
-
-/*var checkInDate = new Date();
-var checkOutDate = new Date();*/
 
 
 function getHotels(checkInDate, checkOutDate, destinationID, amount){
@@ -396,7 +420,7 @@ function getDestinationID(place, startDate, finishDate){
         "url": "https://hotels-com-provider.p.rapidapi.com/v1/destinations/search?locale=uk_UA&currency=UAH&query="+place,
         "method": "GET",
         "headers": {
-            "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+            "x-rapidapi-key": "ede1fd9905msh16ba28818747c8ep171ed9jsn6dff7a1b400f",
             "x-rapidapi-host": "hotels-com-provider.p.rapidapi.com"
         }
     };
@@ -490,11 +514,11 @@ function visualizeFlight(){
         console.log(arrivalPoint);
         geocodeAirportAddress(departurePoint, arrivalPoint, colorBack);
     }
-    if($yourHotel.find(".price").length !=0){
+    /*if($yourHotel.find(".price").length !=0){
         departurePoint = $yourFlights.find(".destination")[0].firstChild.data;
         arrivalPoint = $yourHotel.find(".name")[0].firstChild.data;
         calculateRoute(departurePoint, arrivalPoint);
-    }
+    }*/
 }
 
 function geocodeAirportAddress(address1, address2, color) {
@@ -503,6 +527,7 @@ function geocodeAirportAddress(address1, address2, color) {
         temp = results[0].geometry.location;
         geocoder.geocode({ 'address': address2 }, function (results, status) {
             temp2 = results[0].geometry.location;
+            map.setCenter(results[0].geometry.location);
             new google.maps.Marker({
                 position: temp,
                 map: map,
@@ -513,6 +538,7 @@ function geocodeAirportAddress(address1, address2, color) {
                 map: map,
                 icon:"../www/assets/images/landing.png",
             });
+
 
             var route = [
                 temp,
@@ -531,32 +557,7 @@ function geocodeAirportAddress(address1, address2, color) {
         });
     });
 }
-var directionsDisplay = null;
-function calculateRoute(address1, address2) {
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ 'address': address1 }, function (results, status) {
-        temp = results[0].geometry.location;
-        geocoder.geocode({ 'address': address2 }, function (results, status) {
-            temp2 = results[0].geometry.location;
 
-            directionsDisplay = new google.maps.DirectionsRenderer();
-
-            var request = {
-                origin: temp,
-                destination: temp2,
-                travelMode: google.maps.DirectionsTravelMode.DRIVING
-            };
-
-            directionsService.route(request, function(response, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    directionsDisplay.setDirections(response);
-                }
-            });
-
-            directionsDisplay.setMap(map);
-        });
-    });
-}
 
 function initialize(){
 

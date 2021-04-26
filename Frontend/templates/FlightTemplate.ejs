@@ -1,10 +1,11 @@
 
-<div class = "row">
+
+<div class = "row template">
     <div class = "col-md-1">
         <img src="assets/images/flight.png" class="picture">
     </div>
     <div class = "col-md-3">
-        <div><%= flight.date%></div>
+        <div><%= flight.date.split('T')[0]%></div>
         <div><%= flight.carrier%></div>
     </div>
     <div class = "col-md-3">
@@ -16,6 +17,6 @@
         <div>грн</div>
     </div>
     <div class = "col-md-2 chooseFlight">
-        <button>обрати</button>
+        <button class='btn btn-primary flightbtn'>обрати</button>
     </div>
 </div>

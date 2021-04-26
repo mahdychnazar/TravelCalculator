@@ -180,6 +180,9 @@ function showOneFlight(oneFlightInfo, htmlEl){
     htmlEl.append($node);
 }
 function chooseFlight(oneFlightInfo){
+    document.getElementById('summary').hidden = false;
+    document.getElementById('sum').hidden = false;
+    document.getElementById('sum1').hidden = false;
     $yourFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
@@ -187,12 +190,16 @@ function chooseFlight(oneFlightInfo){
     $node.find(".chooseFlight").click(function(){
         $yourFlights.html("");
         getSum()
+
     });
     getSum();
     Maps.visualizeFlight();
 
 }
 function chooseBackFlight(oneFlightInfo){
+    document.getElementById('summary').hidden = false;
+    document.getElementById('sum').hidden = false;
+    document.getElementById('sum1').hidden = false;
     $yourBackFlights.html("");
     var html_code = Templates.FlightTamplate({flight: oneFlightInfo});
     var $node = $(html_code);
@@ -227,7 +234,15 @@ function getSum(){
 
 function initialize() {
     $("#calcButton").click(function () {
+        Maps.initialize();
+        document.getElementById('flightsList').hidden = false;
+        document.getElementById('backFlightsList').hidden = false;
+        document.getElementById('hotelsList').hidden = false;
+        document.getElementById('myTrip').hidden = false;
+        document.getElementById('flight').hidden = false;
+        document.getElementById('hotel').hidden = false;
         $flightsList.html("Шукаю авіарейси...");
+
         cityToID = null;
         cityFromID = null;
 
@@ -236,6 +251,7 @@ function initialize() {
         startDate = $("#firstDate").val();
         finishDate = $("#secondDate").val();
          if(document.getElementById("backFlightCheck").checked){
+             document.getElementById('flightBack').hidden = false;
              $backFlightList.html("Шукаю авіарейси...");
          }
          else{

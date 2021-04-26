@@ -1,24 +1,35 @@
 
-function initialize(){
+function initialize() {
+    document.getElementById('flight').hidden = true;
+    document.getElementById('flightBack').hidden = true;
+    document.getElementById('hotel').hidden = true;
+    document.getElementById('summary').hidden = true;
+    document.getElementById('sum').hidden = true;
+    document.getElementById('sum1').hidden = true;
+    document.getElementById('flightsList').hidden = true;
+    document.getElementById('backFlightsList').hidden = true;
+    document.getElementById('hotelsList').hidden = true;
+    document.getElementById('myTrip').hidden = true;
+
     var todaysDate = new Date();
     var year = todaysDate.getFullYear();
     var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);
     var day = ("0" + todaysDate.getDate()).slice(-2);
-    var minDate = (year +"-"+ month +"-"+ day);
-    $('#firstDate').attr('min',minDate);
-    $('#secondDate').attr('min',minDate);
+    var minDate = (year + "-" + month + "-" + day);
+    $('#firstDate').attr('min', minDate);
+    $('#secondDate').attr('min', minDate);
     startDate = minDate;
     finishDate = minDate;
-    $('#firstDate').on("input", function(){
+    $('#firstDate').on("input", function () {
         startDate = document.getElementById("firstDate").value;
         console.log(startDate);
-        if(startDate > finishDate || startDate < minDate){
+        if (startDate > finishDate || startDate < minDate) {
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
             $("#secondDate").addClass("is-invalid");
         }
-        else{
+        else {
             $("#firstDate").removeClass("is-invalid");
             $("#firstDate").addClass("is-valid");
             $("#secondDate").removeClass("is-invalid");
@@ -28,16 +39,16 @@ function initialize(){
 
 
     })
-    $('#secondDate').on("input", function(){
+    $('#secondDate').on("input", function () {
         finishDate = document.getElementById("secondDate").value;
         console.log(finishDate);
-        if(startDate > finishDate || startDate < minDate){
+        if (startDate > finishDate || startDate < minDate) {
             $("#firstDate").removeClass("is-valid");
             $("#firstDate").addClass("is-invalid");
             $("#secondDate").removeClass("is-valid");
             $("#secondDate").addClass("is-invalid");
         }
-        else{
+        else {
             $("#firstDate").removeClass("is-invalid");
             $("#firstDate").addClass("is-valid");
             $("#secondDate").removeClass("is-invalid");
@@ -45,29 +56,29 @@ function initialize(){
         }
         $('#firstDate').attr('max', finishDate);
     })
-    $('#arrival').on("input", function(){
+    $('#arrival').on("input", function () {
         var city = $('#arrival').val();
         //console.log(city);
-        if(!checkName(city)){
+        if (!checkName(city)) {
             $("#arrival").removeClass("is-valid");
             $("#arrival").addClass("is-invalid");
 
         }
-        else{
+        else {
             $("#arrival").removeClass("is-invalid");
             $("#arrival").addClass("is-valid");
         }
     })
 
-    $('#departure').on("input", function(){
+    $('#departure').on("input", function () {
         var city = $('#departure').val();
-       // console.log(city);
-        if(!checkName(city)){
+        // console.log(city);
+        if (!checkName(city)) {
             $("#departure").removeClass("is-valid");
             $("#departure").addClass("is-invalid");
 
         }
-        else{
+        else {
             $("#departure").removeClass("is-invalid");
             $("#departure").addClass("is-valid");
         }
@@ -75,7 +86,7 @@ function initialize(){
 
 }
 function isCharName(c) {
-    if(c == " " || c == "'" || c == "-" || (c.toUpperCase() != c.toLowerCase())){
+    if (c == " " || c == "'" || c == "-" || (c.toUpperCase() != c.toLowerCase())) {
         return true;
     }
 

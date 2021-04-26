@@ -1,4 +1,4 @@
-<div class = "row">
+<div class = "row template">
     <div class = "col-md-1">
         <img src="assets/images/hotel.png" class="picture">
     </div>
@@ -14,9 +14,9 @@
         <div class = "price"><%= hotel.ratePlan.price.current.split(' ')[0]%></div>
         <div>грн/ніч</div>
     </div>
-    <div class ="hidden"><%= hotel.coordinate%></div>
+
     <div class = "col-md-2 chooseHotel">
-        <button>обрати</button>
+        <button class='btn btn-primary hotelbtn'>обрати</button>
     </div>
 
 </div>

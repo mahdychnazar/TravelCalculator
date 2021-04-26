@@ -9,9 +9,6 @@ var $yourHotel = $("#yourHotel");
 
 
 
-/*var checkInDate = new Date();
-var checkOutDate = new Date();*/
-
 
 function getHotels(checkInDate, checkOutDate, destinationID, amount){
     const settings = {
@@ -37,7 +34,7 @@ function getDestinationID(place, startDate, finishDate){
         "url": "https://hotels-com-provider.p.rapidapi.com/v1/destinations/search?locale=uk_UA&currency=UAH&query="+place,
         "method": "GET",
         "headers": {
-            "x-rapidapi-key": "52beb59b4amsh61bab5abc3639c7p1ff0c7jsn49006181c3b2",
+            "x-rapidapi-key": "ede1fd9905msh16ba28818747c8ep171ed9jsn6dff7a1b400f",
             "x-rapidapi-host": "hotels-com-provider.p.rapidapi.com"
         }
     };

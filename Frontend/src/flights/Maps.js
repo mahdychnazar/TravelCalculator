@@ -25,11 +25,11 @@ function visualizeFlight(){
         console.log(arrivalPoint);
         geocodeAirportAddress(departurePoint, arrivalPoint, colorBack);
     }
-    if($yourHotel.find(".price").length !=0){
+    /*if($yourHotel.find(".price").length !=0){
         departurePoint = $yourFlights.find(".destination")[0].firstChild.data;
         arrivalPoint = $yourHotel.find(".name")[0].firstChild.data;
         calculateRoute(departurePoint, arrivalPoint);
-    }
+    }*/
 }
 
 function geocodeAirportAddress(address1, address2, color) {
@@ -38,6 +38,7 @@ function geocodeAirportAddress(address1, address2, color) {
         temp = results[0].geometry.location;
         geocoder.geocode({ 'address': address2 }, function (results, status) {
             temp2 = results[0].geometry.location;
+            map.setCenter(results[0].geometry.location);
             new google.maps.Marker({
                 position: temp,
                 map: map,
@@ -48,6 +49,7 @@ function geocodeAirportAddress(address1, address2, color) {
                 map: map,
                 icon:"../www/assets/images/landing.png",
             });
+
 
             var route = [
                 temp,
@@ -66,32 +68,7 @@ function geocodeAirportAddress(address1, address2, color) {
         });
     });
 }
-var directionsDisplay = null;
-function calculateRoute(address1, address2) {
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ 'address': address1 }, function (results, status) {
-        temp = results[0].geometry.location;
-        geocoder.geocode({ 'address': address2 }, function (results, status) {
-            temp2 = results[0].geometry.location;
 
-            directionsDisplay = new google.maps.DirectionsRenderer();
-
-            var request = {
-                origin: temp,
-                destination: temp2,
-                travelMode: google.maps.DirectionsTravelMode.DRIVING
-            };
-
-            directionsService.route(request, function(response, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    directionsDisplay.setDirections(response);
-                }
-            });
-
-            directionsDisplay.setMap(map);
-        });
-    });
-}
 
 function initialize(){
 
